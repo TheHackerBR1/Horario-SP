@@ -3,49 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relógio de São Paulo</title>
+    <title>Hora Atual em São Paulo</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
             background-color: #282c34;
             color: white;
-            font-family: Arial, sans-serif;
+        }
+        #hora {
             font-size: 48px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="clock">Carregando...</div>
-
+    <h1>Hora Atual em São Paulo</h1>
+    <div id="hora">Carregando...</div>
     <script>
-        async function fetchTime() {
+        async function obterHoraSaoPaulo() {
             try {
-                const response = await fetch('http://worldtimeapi.org/api/timezone/America/Sao_Paulo');
-                const data = await response.json();
-                return new Date(data.datetime);
-            } catch (error) {
-                console.error('Erro ao buscar a hora:', error);
-                return new Date(); // Retorna a hora local em caso de erro
+                const resposta = await fetch('http://worldtimeapi.org/api/timezone/America/Sao_Paulo');
+                const dados = await resposta.json();
+                
+                if (dados && dados.datetime) {
+                    // Formata a data e hora
+                    const dataHora = new Date(dados.datetime);
+                    const opcoes = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                    const horaFormatada = dataHora.toLocaleTimeString('pt-BR', opcoes);
+                    document.getElementById('hora').innerText = 'Hora em São Paulo: ' + horaFormatada;
+                } else {
+                    document.getElementById('hora').innerText = 'Erro ao obter a hora.';
+                }
+            } catch (erro) {
+                console.error('Erro ao fazer a requisição:', erro);
+                document.getElementById('hora').innerText = 'Erro ao fazer a requisição: ' + erro;
             }
         }
 
-        async function updateClock() {
-            const now = await fetchTime();
-
-            // Formata a hora para 24 horas
-            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const timeString = now.toLocaleTimeString('pt-BR', options);
-
-            // Atualiza o conteúdo do elemento com o id "clock"
-            document.getElementById('clock').textContent = timeString;
-        }
-
-        // Atualiza o relógio a cada segundo
-        setInterval(updateClock, 1000);
-        updateClock(); // Chama a função uma vez para não esperar 1 segundo
+        // Chamada da função
+        obterHoraSaoPaulo();
     </script>
 </body>
 </html>
