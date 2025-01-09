@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio de São Paulo</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 48px;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock">Carregando...</div>
+
+    <script>
+        async function fetchTime() {
+            try {
+                const response = await fetch('http://worldtimeapi.org/api/timezone/America/Sao_Paulo');
+                const data = await response.json();
+                return new Date(data.datetime);
+            } catch (error) {
+                console.error('Erro ao buscar a hora:', error);
+                return new Date(); // Retorna a hora local em caso de erro
+            }
+        }
+
+        async function updateClock() {
+            const now = await fetchTime();
+
+            // Formata a hora para 24 horas
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = now.toLocaleTimeString('pt-BR', options);
+
+            // Atualiza o conteúdo do elemento com o id "clock"
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        // Atualiza o relógio a cada segundo
+        setInterval(updateClock, 1000);
+        updateClock(); // Chama a função uma vez para não esperar 1 segundo
+    </script>
+</body>
+</html>
